@@ -1,0 +1,78 @@
+
+
+Given two strings s and t, return the shortest substring of s such that every character in t, including duplicates, is present in the substring. If such a substring does not exist, return an empty string "".
+
+You may assume that the correct output is always unique.
+
+Example 1:
+
+Input: s = "OUZODYXAZV", t = "XYZ"
+
+Output: "YXAZ"
+
+BruteForce Solution:-
+
+class Solution:
+    def minWindow(self, s: str, t: str) -> str:
+        count={}
+        res=""
+        if len(s)<len(t):
+            return ""
+        minlen=len(s)
+        for k in t:
+            count[k]=count.get(k,0)+1
+        l=count.copy()
+        for i in range(len(s)):
+            count=l.copy()
+            if s[i] in t:
+                start=i
+                while start<len(s):
+                    if s[start] in count:
+                        count[s[start]]-=1
+                        if count[s[start]]==0:
+                            count.pop(s[start]) 
+                    if not count:
+                        if len(s[i:start])<minlen:
+                            res=s[i:start+1]
+                            minlen=min(len(res),minlen)
+                        break
+                    start+=1   
+        return res
+
+
+# how to check is an dic is empty ? if not count
+# how to remove an element from the dic ? count.pop(s[i])
+# create an count dic ?  count[k]=count.get(k,0)+1
+
+Efficient Solution:
+
+
+class Solution:
+    def minWindow(self, s: str, t: str) -> str:
+        countT,window={},{}
+        
+        for k in t:
+            countT[k]=countT.get(k,0)+1
+        have,need=0,len(countT)
+        l=0
+        res=[-1,-1]
+        length=float('infinity')
+        for r in range(len(s)):
+            c=s[r]
+            window[c]=window.get(c,0)+1
+            if c in countT and countT[c]==window[c]:
+                have+=1
+            while have==need:
+                if (r-l+1)<length:
+                    res=[l,r]
+                    length=r-l+1
+                window[s[l]]-=1
+                if s[l] in countT and window[s[l]]<countT[s[l]]:
+                    have-=1
+                l+=1
+        l,r=res
+        return s[l:r+1] if length!=float("infinity") else ""
+
+here we dont remove windo after cal we use that by removing from left and adding to right like a head and tail l , r 
+
+
